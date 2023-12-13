@@ -81,16 +81,20 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
     random_device rd;
     mt19937 gen(rd());
     int size = field.size();
+    int attempts = rec*3;
     int super = rec / 100 * (gen() % 10);
     int hard = rec / 100 * (gen() % 10);
     int x;
     int y;
-    while (rec > 0) {
+    while (rec > 0 && attempts != 0) {
         x = gen() % size;
         y = gen() % size;
         if (field[y][x] == ' ' && !(preds[y][x].alive)) {
             field[y][x] = '.';
             --rec;
+        }
+        else {
+            --attempts;
         }
     }
     while (super > 0) {
@@ -121,10 +125,10 @@ string show(vector<vector<entity>> preds, vector<vector<entity>> herbs, vector<v
         s += "|";
         for (int j = 0; j < msize; ++j) {
             if (preds[i][j].alive) {
-                s += " W";
+                s += " P";
             }
             else if (herbs[i][j].alive) {
-                s += " O";
+                s += " H";
             }
             else if (vect[i][j] != ' ') {
                 s += " " + string(1, vect[i][j]);
@@ -139,18 +143,234 @@ string show(vector<vector<entity>> preds, vector<vector<entity>> herbs, vector<v
     return s + "\n\n";
 }
 
-void animals(int size = 50, int dur = 30, int pred_cnt = 60, int pred_age = 15, int pred_start = 3, int pred_end = 10,
-    int pred_born = 65, int pred_hung = 5, int herb_cnt = 60, int herb_age = 15, int herb_start = 2,
-    int herb_end = 8, int herb_born = 85, int herb_hung = 5, int grass_rec = 200, int storm_chanse = 1) {
+vector<vector<entity>> go(vector<vector<entity>> one, vector<vector<entity>> two, vector<vector<char>> &three, bool ispred) {
+    random_device rd;
+    mt19937 gen(rd());
+    int msize = one.size();
+    vector<vector<entity>> newOne(msize, vector<entity>(msize, entity()));
+    int x;
+    int y;
+    for (int i = 0; i < msize; ++i) {
+        for (int j = 0; j < msize; ++j) {
+            if (one[i][j].alive) {
+                int attempts = 10;
+                while (attempts != 0) {
+                    x = gen() % 3 - 1;
+                    y = gen() % 3 - 1;
+                    if (i == 0) {
+                        y = abs(y);
+                    }
+                    if (j == 0) {
+                        x = abs(x);
+                    }
+                    if (i == msize - 1) {
+                        y = -abs(y);
+                    }
+                    if (j == msize - 1) {
+                        x = -abs(x);
+                    }
+                    if (!newOne[i + y][j + x].alive && !one[i + y][j + x].alive && !two[i + y][j + x].alive) {
+                        if (ispred && three[i + y][j + x] == '#') {
+                            three[i + y][j + x] = ' ';
+                            break;
+                        }
+                        newOne[i + y][j + x] = one[i][j];
+                        if (ispred && three[i+y][j+x] != ' ') {
+                            three[i + y][j + x] = ' ';
+                        }
+                        break;
+                    }
+                    --attempts;
+                }
+            }
+        }
+    }
+    return newOne;
+}
+
+void die(vector<vector<entity>> &one, float maxAge, float needHung) {
+    random_device rd;
+    mt19937 gen(rd());
+    int msize = one.size();
+    for (int i = 0; i < msize; ++i) {
+        for (int j = 0; j < msize; ++j) {
+            if (one[i][j].alive) {
+                int chance = (one[i][j].age / maxAge) * 100 - sqrt(maxAge);
+                int rand = gen() % 100;
+                if (rand <= chance && (one[i][j].hung < needHung)) {
+                    one[i][j] = entity();
+                }
+            }
+        }
+    }
+}
+
+void hunt(vector<vector<entity>> &preds, vector<vector<entity>> &herbs) {
+    int msize = preds.size();
+    for (int y = 0; y < msize; ++y) {
+        for (int x = 0; x < msize; ++x) {
+            if (preds[y][x].alive) {
+                vector<vector<int>> coord;
+                int y_st = y - 1, y_ed = y + 1;
+                int x_st = x - 1, x_ed = x + 1;
+
+                if (y == 0) {
+                    y_st = y;
+                }
+                if (x == 0) {
+                    x_st = x;
+                }
+                if (y == msize-1) {
+                    y_ed = y;
+                }
+                if (x == msize-1) {
+                    x_ed = x;
+                }
+                for (int i = y_st; i <= y_ed; ++i) {
+                    for (int j = x_st; j <= x_ed; ++j) {
+                        if (herbs[i][j].alive) {
+                            coord.push_back({i,j});
+                        }
+                    }
+                }
+                if (coord.size() != 0) {
+                    random_device rd;
+                    mt19937 gen(rd());
+                    int ch = gen() % coord.size();
+                    herbs[coord[ch][0]][coord[ch][1]] = entity();
+                    ++preds[y][x].hung;
+                }
+            }
+        }
+    }
+}
+
+void eat(vector<vector<entity>>& herbs, vector<vector<char>>& grass) {
+    int msize = herbs.size();
+    for (int y = 0; y < msize; ++y) {
+        for (int x = 0; x < msize; ++x) {
+            if (herbs[y][x].alive) {
+                vector<vector<int>> super;
+                vector<vector<int>> norm;
+                int y_st = y - 1, y_ed = y + 1;
+                int x_st = x - 1, x_ed = x + 1;
+
+                if (y == 0) {
+                    y_st = y;
+                }
+                if (x == 0) {
+                    x_st = x;
+                }
+                if (y == msize - 1) {
+                    y_ed = y;
+                }
+                if (x == msize - 1) {
+                    x_ed = x;
+                }
+                for (int i = y_st; i <= y_ed; ++i) {
+                    for (int j = x_st; j <= x_ed; ++j) {
+                        if (grass[i][j] == '^') {
+                            super.push_back({ i,j });
+                        }
+                        if (grass[i][j] == '.') {
+                            norm.push_back({ i,j });
+                        }
+                    }
+                }
+                if (super.size() != 0) {
+                    random_device rd;
+                    mt19937 gen(rd());
+                    int ch = gen() % super.size();
+                    grass[super[ch][0]][super[ch][1]] = ' ';
+                    herbs[y][x].hung += 3;
+                }
+                else if (norm.size() != 0) {
+                    random_device rd;
+                    mt19937 gen(rd());
+                    int ch = gen() % norm.size();
+                    grass[norm[ch][0]][norm[ch][1]] = ' ';
+                    ++herbs[y][x].hung;
+                }
+            }
+        }
+    }
+}
+
+void born(vector<vector<entity>>& one, vector<vector<entity>>& two, vector<vector<char>>& three, bool ispred,
+            int mh, int minAge, int maxAge, int chance) {
+    random_device rd;
+    mt19937 gen(rd());
+    int msize = one.size();
+    for (int y = 0; y < msize; ++y) {
+        for (int x = 0; x < msize; ++x) {
+            if (one[y][x].alive && minAge <= one[y][x].age && one[y][x].age <= maxAge) {
+                vector<vector<int>> coord;
+                bool para = false;
+                int cnt = 0;
+                int y_st = y - 1, y_ed = y + 1;
+                int x_st = x - 1, x_ed = x + 1;
+
+                if (y == 0) {
+                    y_st = y;
+                }
+                if (x == 0) {
+                    x_st = x;
+                }
+                if (y == msize - 1) {
+                    y_ed = y;
+                }
+                if (x == msize - 1) {
+                    x_ed = x;
+                }
+                for (int i = y_st; i <= y_ed; ++i) {
+                    for (int j = x_st; j <= x_ed; ++j) {
+                        if (!two[i][j].alive && !one[i][j].alive) {
+                            coord.push_back({ i,j });
+                        }
+                        if (one[i][j].alive && minAge <= one[i][j].age && one[i][j].age <= maxAge) {
+                            para = true;
+                        }
+                        if (one[i][j].alive || two[i][j].alive) {
+                            ++cnt;
+                        }
+                    }
+                }
+                int rand = gen() % 100;
+                if (coord.size() != 0 && para && cnt == 1 && rand <= chance) {
+                    int ch = gen() % coord.size();
+                    one[coord[ch][0]][coord[ch][1]].alive = true;
+                    one[coord[ch][0]][coord[ch][1]].hung = mh;
+                    if (ispred) {
+                        three[coord[ch][0]][coord[ch][1]] = ' ';
+                    }
+                }
+            }
+        }
+    }
+}
+
+void plusage(vector<vector<entity>>& one) {
+    for (int i = 0; i < one.size(); ++i) {
+        for (int j = 0; j < one.size(); ++j) {
+            if (one[i][j].alive) {
+                ++one[i][j].age;
+                one[i][j].hung /= 2;
+            }
+        }
+    }
+}
+
+void animals(int size = 5, int dur = 2, int pred_cnt = 2, int pred_age = 15, int pred_start = 3, int pred_end = 10,
+    int pred_born = 65, int pred_hung = 5, int herb_cnt = 2, int herb_age = 15, int herb_start = 2,
+    int herb_end = 8, int herb_born = 85, int herb_hung = 5, int grass_rec = 5, int storm_chanse = 1, int season = 1) {
     random_device rd;
     mt19937 gen(rd());
 
-    entity ent;
-    vector<vector<entity>> preds(size, vector<entity>(size, ent));
-    vector<vector<entity>> herbs(size, vector<entity>(size, ent));
+    vector<vector<entity>> preds(size, vector<entity>(size, entity()));
+    vector<vector<entity>> herbs(size, vector<entity>(size, entity()));
 
-    preds = generate(preds, herbs, pred_cnt, pred_hung / 2);
-    herbs = generate(herbs, preds, herb_cnt, herb_hung / 2);
+    preds = generate(preds, herbs, pred_cnt, pred_hung);
+    herbs = generate(herbs, preds, herb_cnt, herb_hung);
 
     vector<vector<char>> field(size, vector<char>(size, ' '));
     field = grass(field, preds, grass_rec);
@@ -161,23 +381,61 @@ void animals(int size = 50, int dur = 30, int pred_cnt = 60, int pred_age = 15, 
 
     for (int yr = 1; yr <= dur; ++yr) {
         for (int mnth = 1; mnth <= 12; ++mnth) {
-            
+            born(preds, herbs, field, true, pred_hung / 2, pred_start, pred_end, pred_born);
+            born(herbs, preds, field, false, herb_hung / 2, herb_start, herb_end, herb_born);
+
+            hunt(preds, herbs);
+            eat(herbs, field);
+
+            die(preds, pred_age, pred_hung);
+            die(herbs, herb_age, herb_hung);
+
+            preds = go(preds, herbs, field, true);
+            herbs = go(herbs, preds, field, false);
+
+            logs << "Месяц: " << mnth << ", Год: " << yr << '\n';
+            logs << show(preds, herbs, field);
         }
+        plusage(preds);
+        plusage(herbs);
+        field = grass(field, preds, grass_rec);
     }
-
-
-
-
-
-
-
     logs.close();
 }
 
+#pragma region Beautiful
 
+#define DBLUE 1
+#define DGREEN 2
+#define DLBLUE 3
+#define DRED 4
+#define DPINK 5
+#define DYELLOW 6
+#define DEFAULT 7
+#define GRAY 8
+#define BLUE 9
+#define GREEN 10
+#define LBLUE 11
+#define RED 12
+#define PINK 13
+#define YELLOW 14
+#define WHITE 15
 
+void print(string text, int color = DEFAULT) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
+    cout << text;
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+}
 
+void println(string text, int color = DEFAULT) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
+    cout << text << endl;
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+}
 
+#pragma endregion
 
 int main() {
     setlocale(LC_ALL, "Russian");
@@ -223,8 +481,10 @@ int main() {
         int grass_rec = ichek(0, size * size);
         cout << "Введите шанс на природный катаклизм в месяц (от 0 до 100%): ";
         int storm_chanse = (0, 100);
+        cout << "Введите начальное время года (весна - 1, лето - 2, осень - 3, зима - 4): ";
+        int season = (1, 4);
         animals(size, dur, pred_cnt, pred_age, pred_start, pred_end, pred_born, pred_hung, herb_cnt, herb_age,
-            herb_start, herb_end, herb_born, herb_hung, grass_rec, storm_chanse);
+            herb_start, herb_end, herb_born, herb_hung, grass_rec, storm_chanse, season);
     }*/
     return 0;
 }
