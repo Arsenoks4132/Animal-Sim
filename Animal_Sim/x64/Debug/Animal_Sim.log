@@ -1,6 +1,16 @@
 ﻿  Animal_Sim.cpp
-C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(41,40): warning C4101: e: неиспользованная локальная переменная
-C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(81,14): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(93,14): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(108,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-  Animal_Sim.vcxproj -> C:\Users\Danov\source\repos\Animal_Sim\x64\Debug\Animal_Sim.exe
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(41,40): warning C4101: e: неиспользованная локальная переменная
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(64,14): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(83,14): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(122,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(149,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(194,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(198,28): warning C4244: инициализация: преобразование "float" в "int", возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(209,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(249,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(303,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(390,34): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(390,24): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(391,34): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\Animal_Sim.cpp(391,24): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+  Animal_Sim.vcxproj -> C:\Users\user\source\repos\Arsenoks4132\Animal-Sim\Animal_Sim\x64\Debug\Animal_Sim.exe
