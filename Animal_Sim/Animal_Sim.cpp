@@ -115,21 +115,33 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
 
 
 string show(vector<vector<entity>> preds, vector<vector<entity>> herbs, vector<vector<char>> vect) {
-    string s = "";
     int msize = vect.size();
+    string s = " " + string(msize * 2 + 1, '_') + "\n";
     for (int i = 0; i < msize; ++i) {
+        s += "|";
         for (int j = 0; j < msize; ++j) {
-            s += " ";
-            s += string(1, vect[i][j]);
+            if (preds[i][j].alive) {
+                s += " W";
+            }
+            else if (herbs[i][j].alive) {
+                s += " O";
+            }
+            else if (vect[i][j] != ' ') {
+                s += " " + string(1, vect[i][j]);
+            }
+            else {
+                s += "  ";
+            }
         }
-        s += "\n";
+        s += " |\n";
     }
-    return s + "\n";
+    s += " " + string(msize * 2 + 1, '-');
+    return s + "\n\n";
 }
 
-void animals(int size = 50, int dur = 30, int pred_cnt = 100, int pred_age = 15, int pred_start = 3, int pred_end = 10,
-    int pred_born = 65, int pred_hung = 5, int herb_cnt = 100, int herb_age = 15, int herb_start = 2,
-    int herb_end = 8, int herb_born = 85, int herb_hung = 5, int grass_rec = 100, int storm_chanse = 1) {
+void animals(int size = 50, int dur = 30, int pred_cnt = 60, int pred_age = 15, int pred_start = 3, int pred_end = 10,
+    int pred_born = 65, int pred_hung = 5, int herb_cnt = 60, int herb_age = 15, int herb_start = 2,
+    int herb_end = 8, int herb_born = 85, int herb_hung = 5, int grass_rec = 200, int storm_chanse = 1) {
     random_device rd;
     mt19937 gen(rd());
 
