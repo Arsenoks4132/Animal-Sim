@@ -58,23 +58,22 @@ struct entity {
 };
 
 
-vector<vector<entity>> generate(int size, int cnt, int hung) {
+vector<vector<entity>> generate(vector<vector<entity>> one, vector<vector<entity>> two, int cnt, int hung) {
     random_device rd;
     mt19937 gen(rd());
+    int size = one.size();
     int x;
     int y;
-    entity ent;
-    vector<vector<entity>> field(size, vector<entity>(size, ent));
     while (cnt > 0) {
         x = gen() % size;
         y = gen() % size;
-        if (! field[y][x].alive) {
-            field[y][x].alive = 1;
-            field[y][x].hung = hung;
+        if (!(one[y][x].alive) && !(two[y][x].alive)) {
+            one[y][x].alive = 1;
+            one[y][x].hung = hung;
             --cnt;
         }
     }
-    return field;
+    return one;
 }
 
 
@@ -97,16 +96,25 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
     while (super > 0) {
         x = gen() % size;
         y = gen() % size;
-        if (field[y][x] == ' ' && !(preds[y][x].alive)) {
-            field[y][x] = '.';
+        if (!(preds[y][x].alive)) {
+            field[y][x] = '^';
             --super;
+        }
+    }
+
+    while (hard > 0) {
+        x = gen() % size;
+        y = gen() % size;
+        if (field[y][x] == ' ' && !(preds[y][x].alive)) {
+            field[y][x] = '#';
+            --hard;
         }
     }
     return field;
 }
 
 
-string show(vector<vector<char>> vect) {
+string show(vector<vector<entity>> preds, vector<vector<entity>> herbs, vector<vector<char>> vect) {
     string s = "";
     int msize = vect.size();
     for (int i = 0; i < msize; ++i) {
@@ -125,15 +133,19 @@ void animals(int size = 50, int dur = 30, int pred_cnt = 100, int pred_age = 15,
     random_device rd;
     mt19937 gen(rd());
 
-    vector<vector<entity>> preds = generate(size, pred_cnt, pred_hung / 2);
-    vector<vector<entity>> herbs = generate(size, herb_cnt, herb_hung / 2);
+    entity ent;
+    vector<vector<entity>> preds(size, vector<entity>(size, ent));
+    vector<vector<entity>> herbs(size, vector<entity>(size, ent));
+
+    preds = generate(preds, herbs, pred_cnt, pred_hung / 2);
+    herbs = generate(herbs, preds, herb_cnt, herb_hung / 2);
 
     vector<vector<char>> field(size, vector<char>(size, ' '));
     field = grass(field, preds, grass_rec);
 
     ofstream logs("logs.txt");
     logs << "Начальные условия:\n";
-    logs << show(field);
+    logs << show(preds, herbs, field);
 
     for (int yr = 1; yr <= dur; ++yr) {
         for (int mnth = 1; mnth <= 12; ++mnth) {
