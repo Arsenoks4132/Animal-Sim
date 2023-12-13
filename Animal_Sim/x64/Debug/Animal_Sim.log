@@ -1,0 +1,6 @@
+﻿  Animal_Sim.cpp
+C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(41,40): warning C4101: e: неиспользованная локальная переменная
+C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(81,14): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(93,14): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Danov\source\repos\Animal_Sim\Animal_Sim\Animal_Sim.cpp(108,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  Animal_Sim.vcxproj -> C:\Users\Danov\source\repos\Animal_Sim\x64\Debug\Animal_Sim.exe
