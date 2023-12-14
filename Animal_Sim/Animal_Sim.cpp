@@ -6,6 +6,8 @@
 
 using namespace std;
 
+void printToConsole(int, int);
+
 int ichek(int min, int max, string x = "") {
     int res;
     bool b, t = 0;
@@ -360,7 +362,7 @@ void plusage(vector<vector<entity>>& one) {
     }
 }
 
-void animals(int size = 5, int dur = 2, int pred_cnt = 2, int pred_age = 15, int pred_start = 3, int pred_end = 10,
+void animals(int size = 6, int dur = 1, int pred_cnt = 2, int pred_age = 15, int pred_start = 3, int pred_end = 10,
     int pred_born = 65, int pred_hung = 5, int herb_cnt = 2, int herb_age = 15, int herb_start = 2,
     int herb_end = 8, int herb_born = 85, int herb_hung = 5, int grass_rec = 5, int storm_chanse = 1, int season = 1) {
     random_device rd;
@@ -400,7 +402,10 @@ void animals(int size = 5, int dur = 2, int pred_cnt = 2, int pred_age = 15, int
         plusage(herbs);
         field = grass(field, preds, grass_rec);
     }
+    logs << "Симуляция окончена";
     logs.close();
+
+    printToConsole(dur*12, size);
 }
 
 #pragma region Beautiful
@@ -433,6 +438,42 @@ void println(string text, int color = DEFAULT) {
     SetConsoleTextAttribute(hConsole, color);
     cout << text << endl;
     SetConsoleTextAttribute(hConsole, DEFAULT);
+}
+
+void printToConsole(int generations, int size) {
+    size += 2;
+    ifstream wo("logs.txt");
+    string buff;
+    system("cls");
+    string text = "";
+    for (int j = 0; j <= size + 1; j++) {
+        getline(wo, buff);
+        text += buff;
+        text.push_back('\n');
+    }
+    cout << text;
+    Sleep(3000);
+    for (int i = 0; i < generations; i++) {
+        system("cls");
+        string text = "";
+        for (int j = 0; j <= size + 1; j++) {
+            getline(wo, buff);
+            text += buff;
+            text.push_back('\n');
+        }
+        if (i == generations - 1) {
+            getline(wo, buff);
+            text += buff;
+            text.push_back('\n');
+            text.push_back('\n');
+            cout << text;
+            system("pause");
+            return;
+        }
+        cout << text;
+        Sleep(500);
+    }
+    system("cls");
 }
 
 #pragma endregion
