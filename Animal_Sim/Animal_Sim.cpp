@@ -373,9 +373,46 @@ void plusage(vector<vector<entity>>& one) {
     }
 }
 
+void cataclism(vector<vector<entity>>& preds, vector<vector<entity>>& herbs, vector<vector<char>>& grass, int isdeath) {
+    random_device rd;
+    mt19937 gen(rd());
+    int chanse = gen() % 100;
+    if (isdeath > chanse) {
+        int part = gen() % 4;
+        int size = preds.size();
+        int x_st = 0;
+        int y_st = 0;
+        int x_ed = size;
+        int y_ed = size;
+        if (part == 0) {
+            x_ed/= 2;
+            y_ed /= 2;
+        }
+        else if (part == 1) {
+            x_st = size / 2;
+            y_ed /= 2;
+        }
+        else if (part == 2) {
+            y_st = size / 2;
+            x_ed /= 2;
+        }
+        else {
+            x_st = size / 2;
+            y_st = size / 2;
+        }
+        for (int i = y_st; i < y_ed; ++i) {
+            for (int j = x_st; j < x_ed; ++j) {
+                preds[i][j] = entity();
+                herbs[i][j] = entity();
+                grass[i][j] = ' ';
+            }
+        }
+    }
+}
+
 void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, int pred_start = 3, int pred_end = 10,
     int pred_born = 65, int pred_hung = 5, int herb_cnt = 20, int herb_age = 12, int herb_start = 2,
-    int herb_end = 9, int herb_born = 100, int herb_hung = 5, int grass_rec = 100, int storm_chanse = 1, int curseason = 0) {
+    int herb_end = 9, int herb_born = 100, int herb_hung = 5, int grass_rec = 100, int storm_chanse = 50, int curseason = 0) {
     const string season[4] = {"Весна", "Лето", "Осень", "Зима"};
     cout << "Установленные параметры:\n";
     cout << "Размер квадратного поля: " << size * size << endl;
@@ -429,6 +466,8 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, 
             born(herbs, preds, field, false, herb_hung / 2, herb_start, herb_end, herb_born);
 
             field = grass(field, preds, grass_rec);
+
+            cataclism(preds, herbs, field, storm_chanse);
 
             logs << "Год: " << yr << ", Месяц: " << mnth << ", Время года: " << season[curseason] << '\n';
             logs << show(preds, herbs, field);
