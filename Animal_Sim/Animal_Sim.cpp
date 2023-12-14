@@ -59,7 +59,6 @@ struct entity {
     int hung = 0;
 };
 
-
 vector<vector<entity>> generate(vector<vector<entity>> one, vector<vector<entity>> two, int cnt, int hung) {
     random_device rd;
     mt19937 gen(rd());
@@ -363,9 +362,32 @@ void plusage(vector<vector<entity>>& one) {
     }
 }
 
-void animals(int size = 70, int dur = 3, int pred_cnt = 0, int pred_age = 15, int pred_start = 1, int pred_end = 10,
-    int pred_born = 65, int pred_hung = 5, int herb_cnt = 100, int herb_age = 15, int herb_start = 0,
-    int herb_end = 8, int herb_born = 100, int herb_hung = 5, int grass_rec = 5, int storm_chanse = 1, int season = 1) {
+void animals(int size = 20, int dur = 40, int pred_cnt = 10, int pred_age = 18, int pred_start = 3, int pred_end = 10,
+    int pred_born = 65, int pred_hung = 5, int herb_cnt = 40, int herb_age = 12, int herb_start = 2,
+    int herb_end = 9, int herb_born = 100, int herb_hung = 5, int grass_rec = 5, int storm_chanse = 1, int curseason = 0) {
+    const string season[4] = {"Весна", "Лето", "Осень", "Зима"};
+    cout << "Установленные параметры:\n";
+    cout << "Размер квадратного поля: " << size * size << endl;
+    cout << "Количество лет симуляции: " << dur << endl;
+    cout << "Среднее количество травы: " << grass_rec << endl;
+    cout << "Шанс катаклизма: " << storm_chanse << endl;
+    cout << "Исходное время года: " << season[curseason] << endl;
+
+    cout << "\nХищники:\n";
+    cout << "Начальное кол-во хищников: " << pred_cnt << endl;
+    cout << "Максимальный возраст хищников: " << pred_age << endl;
+    cout << "Возраст начала и конца репродукции хищников: с " << pred_start << " до " << pred_end << endl;
+    cout << "Шанс рождения хищника: " << pred_born << "%" << endl;
+    cout << "Необходимое насыщение для хищника: " << pred_hung << endl;
+
+    cout << "\nТравоядные:\n";
+    cout << "Начальное кол-во травоядных: " << herb_cnt << endl;
+    cout << "Максимальный возраст травоядных: " << herb_age << endl;
+    cout << "Возраст начала и конца репродукции травоядных: с " << herb_start << " до " << herb_end << endl;
+    cout << "Шанс рождения травоядного: " << herb_born << "%" << endl;
+    cout << "Необходимое насыщение для трявоядного: " << herb_hung << endl;
+    system("pause");
+    system("clr");
     random_device rd;
     mt19937 gen(rd());
 
@@ -396,8 +418,14 @@ void animals(int size = 70, int dur = 3, int pred_cnt = 0, int pred_age = 15, in
             born(preds, herbs, field, true, pred_hung / 2, pred_start, pred_end, pred_born);
             born(herbs, preds, field, false, herb_hung / 2, herb_start, herb_end, herb_born);
 
-            logs << "Месяц: " << mnth << ", Год: " << yr << '\n';
+            logs << "Год: " << yr << ", Месяц: " << mnth << ", Время года: " << season[curseason] << '\n';
             logs << show(preds, herbs, field);
+            if (mnth % 3 == 0) {
+                ++curseason;
+                if (curseason == 4) {
+                    curseason = 0;
+                }
+            }
         }
         plusage(preds);
         plusage(herbs);
@@ -408,8 +436,6 @@ void animals(int size = 70, int dur = 3, int pred_cnt = 0, int pred_age = 15, in
 
     printToConsole(dur*12, size);
 }
-
-#pragma region Beautiful
 
 #define DBLUE 1
 #define DGREEN 2
@@ -477,20 +503,16 @@ void printToConsole(int generations, int size) {
     system("cls");
 }
 
-#pragma endregion
-
 int main() {
     setlocale(LC_ALL, "Russian");
-    animals();
-
-   /* cout << "Введите режим определение начальных параметров (0 - автоматические параметры, 1 - ручная установка): ";
+    cout << "Введите режим определение начальных параметров (0 - автоматические параметры, 1 - ручная установка): ";
     int mode = ichek(0, 1);
     if (mode == 0) {
         animals();
     }
     else {
-        int m = 10000;
-
+        int m = 100;
+    
         cout << "Введите ширину поля: ";
         int size = ichek(1, m);
         cout << "Введите количество лет симуляции: ";
@@ -522,11 +544,11 @@ int main() {
         cout << "Введите количество восстанавливаемой в год травы: ";
         int grass_rec = ichek(0, size * size);
         cout << "Введите шанс на природный катаклизм в месяц (от 0 до 100%): ";
-        int storm_chanse = (0, 100);
-        cout << "Введите начальное время года (весна - 1, лето - 2, осень - 3, зима - 4): ";
-        int season = (1, 4);
+        int storm_chanse = ichek(0, 100);
+        cout << "Введите начальное время года (весна - 0, лето - 1, осень - 2, зима - 3): ";
+        int season = ichek(0, 3);
         animals(size, dur, pred_cnt, pred_age, pred_start, pred_end, pred_born, pred_hung, herb_cnt, herb_age,
             herb_start, herb_end, herb_born, herb_hung, grass_rec, storm_chanse, season);
-    }*/
+    }
     return 0;
 }
