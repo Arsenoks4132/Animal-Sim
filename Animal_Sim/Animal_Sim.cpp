@@ -22,6 +22,23 @@ using namespace std;
 #define YELLOW 14
 #define WHITE 15
 
+
+int preds_born = 0;
+int preds_die = 0;
+int preds_stopped = 0;
+
+int herbs_born = 0;
+int herbs_die = 0;
+int herbs_eaten = 0;
+int herbs_super_eaten = 0;
+
+int grass_generated = 0;
+int grass_destroyed = 0;
+int grass_eaten = 0;
+
+int cataclism_count = 0;
+
+
 void print(string text, int color = DEFAULT) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, color);
@@ -161,6 +178,7 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
 		if (field[y][x] == ' ' && !(preds[y][x].alive)) {
 			field[y][x] = '.';
 			--rec;
+			++grass_generated;
 		}
 		else {
 			--attempts;
@@ -172,6 +190,7 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
 		if (!(preds[y][x].alive)) {
 			field[y][x] = '*';
 			--super;
+			++grass_generated;
 		}
 		else {
 			--attempts_s;
@@ -184,6 +203,7 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
 		if (field[y][x] == ' ' && !(preds[y][x].alive)) {
 			field[y][x] = '#';
 			--hard;
+			++grass_generated;
 		}
 		else {
 			--attempts_h;
@@ -246,11 +266,13 @@ vector<vector<entity>> go(vector<vector<entity>> one, vector<vector<entity>> two
 					if (!newOne[i + y][j + x].alive && !one[i + y][j + x].alive && !two[i + y][j + x].alive) {
 						if (ispred && three[i + y][j + x] == '#') {
 							three[i + y][j + x] = ' ';
+							++preds_stopped;
 							break;
 						}
 						newOne[i + y][j + x] = one[i][j];
 						if (ispred && three[i + y][j + x] != ' ') {
 							three[i + y][j + x] = ' ';
+							++grass_destroyed;
 						}
 						break;
 					}
@@ -262,7 +284,7 @@ vector<vector<entity>> go(vector<vector<entity>> one, vector<vector<entity>> two
 	return newOne;
 }
 
-void die(vector<vector<entity>>& one, float maxAge, float needHung) {
+void die(vector<vector<entity>>& one, float maxAge, float needHung, bool ispred) {
 	random_device rd;
 	mt19937 gen(rd());
 	int msize = one.size();
@@ -273,6 +295,13 @@ void die(vector<vector<entity>>& one, float maxAge, float needHung) {
 				int rand = gen() % 100;
 				if (rand <= chance && (one[i][j].hung < needHung)) {
 					one[i][j] = entity();
+					if (ispred) {
+						++preds_die;
+					}
+					else
+					{
+						++herbs_die;
+					}
 				}
 			}
 		}
@@ -313,6 +342,7 @@ void hunt(vector<vector<entity>>& preds, vector<vector<entity>>& herbs) {
 					int ch = gen() % coord.size();
 					herbs[coord[ch][0]][coord[ch][1]] = entity();
 					++preds[y][x].hung;
+					++herbs_eaten;
 				}
 			}
 		}
@@ -357,6 +387,7 @@ void eat(vector<vector<entity>>& herbs, vector<vector<char>>& grass) {
 					int ch = gen() % super.size();
 					grass[super[ch][0]][super[ch][1]] = ' ';
 					herbs[y][x].hung += 3;
+					++herbs_super_eaten;
 				}
 				else if (norm.size() != 0) {
 					random_device rd;
@@ -364,6 +395,7 @@ void eat(vector<vector<entity>>& herbs, vector<vector<char>>& grass) {
 					int ch = gen() % norm.size();
 					grass[norm[ch][0]][norm[ch][1]] = ' ';
 					++herbs[y][x].hung;
+					++grass_eaten;
 				}
 			}
 		}
@@ -419,6 +451,10 @@ void born(vector<vector<entity>>& one, vector<vector<entity>>& two, vector<vecto
 					one[coord[ch][0]][coord[ch][1]].hung = mh;
 					if (ispred) {
 						three[coord[ch][0]][coord[ch][1]] = ' ';
+						++preds_born;
+					}
+					else {
+						++herbs_born;
 					}
 				}
 			}
@@ -466,11 +502,23 @@ void cataclism(vector<vector<entity>>& preds, vector<vector<entity>>& herbs, vec
 		}
 		for (int i = y_st; i < y_ed; ++i) {
 			for (int j = x_st; j < x_ed; ++j) {
-				preds[i][j] = entity();
-				herbs[i][j] = entity();
-				grass[i][j] = ' ';
+
+				if (grass[i][j] != ' ') {
+					grass[i][j] = ' ';
+					++grass_destroyed;
+				}
+				if (preds[i][j].alive) {
+					preds[i][j] = entity();
+					++preds_die;
+				}
+				if (herbs[i][j].alive) {
+					herbs[i][j] = entity();
+					++herbs_die;
+				}
+
 			}
 		}
+		++cataclism_count;
 	}
 }
 
@@ -483,6 +531,28 @@ bool checkTheEnd(vector<vector<entity>>& preds, vector<vector<entity>>& herbs) {
 		}
 	}
 	return true;
+}
+
+string printStats() {
+	string s = "Статистика\n";
+	s += "Хищников родилось - " + to_string(preds_born) + '\n';
+	s += "Хищников умерло - " + to_string(preds_die) + '\n';
+	s += '\n';
+	s += "Травоядных родилось - " + to_string(herbs_born) + '\n';
+	s += "Травоядных умерло - " + to_string(herbs_born) + '\n';
+	s += '\n';
+	s += "Травы сгенерировано - " + to_string(grass_generated) + '\n';
+	s += "Травы уничтожено - " + to_string(grass_destroyed) + '\n';
+	s += '\n';
+	s += "Травоядных съедено - " + to_string(herbs_eaten) + '\n';
+	s += "Травы съедено - " + to_string(grass_eaten) + '\n';
+	s += "Супер-травы съедено - " + to_string(herbs_super_eaten) + '\n';
+	s += '\n';
+	s += "Хищников остановлено - " + to_string(preds_stopped) + '\n';
+	s += '\n';
+	s += "Количество катаклизмов - " + to_string(cataclism_count) + '\n';
+
+	return s;
 }
 
 void animals(int size = 10, int dur = 40, int pred_cnt = 5, int pred_age = 18, int pred_start = 3, int pred_end = 10,
@@ -540,8 +610,8 @@ void animals(int size = 10, int dur = 40, int pred_cnt = 5, int pred_age = 18, i
 				switch (curseason) {
 				case 0: // Весна
 					grass_rec = def_grass_rec;
-					pred_born = def_pred_born+5;
-					herb_born = def_herb_born+5;
+					pred_born = def_pred_born + 5;
+					herb_born = def_herb_born + 5;
 				case 1: // Лето
 					grass_rec = (def_grass_rec * 4) / 5;
 					pred_born = def_pred_born - 10;
@@ -560,7 +630,7 @@ void animals(int size = 10, int dur = 40, int pred_cnt = 5, int pred_age = 18, i
 			eat(herbs, field);
 
 
-			die(herbs, herb_age, herb_hung);
+			die(herbs, herb_age, herb_hung, false);
 
 			preds = go(preds, herbs, field, true);
 			herbs = go(herbs, preds, field, false);
@@ -575,19 +645,21 @@ void animals(int size = 10, int dur = 40, int pred_cnt = 5, int pred_age = 18, i
 			logs << "Год: " << yr << ", Месяц: " << mnth << ", Время года: " << season[curseason] << '\n';
 			logs << show(preds, herbs, field);
 			if (checkTheEnd(preds, herbs)) {
-				logs << "Все популяции существ вымерли, конец симуляции";
+				logs << "Все популяции существ вымерли, конец симуляции\n";
+				logs << printStats();
 				logs.close();
 				system("pause");
 				system("clr");
-				printToConsole((yr-1) * 12 + mnth, size);
+				printToConsole((yr - 1) * 12 + mnth, size);
 				return;
 			}
 		}
 		plusage(preds);
 		plusage(herbs);
-		die(preds, pred_age, pred_hung);
+		die(preds, pred_age, pred_hung, true);
 	}
-	logs << "Симуляция завершена";
+	logs << "Симуляция завершена\n";
+	logs << printStats();
 	logs.close();
 	system("pause");
 	system("clr");
