@@ -474,7 +474,18 @@ void cataclism(vector<vector<entity>>& preds, vector<vector<entity>>& herbs, vec
 	}
 }
 
-void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, int pred_start = 3, int pred_end = 10,
+bool checkTheEnd(vector<vector<entity>>& preds, vector<vector<entity>>& herbs) {
+	for (int i = 0; i < preds.size(); ++i) {
+		for (int j = 0; j < preds.size(); ++j) {
+			if (preds[i][j].alive || herbs[i][j].alive) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void animals(int size = 10, int dur = 40, int pred_cnt = 5, int pred_age = 18, int pred_start = 3, int pred_end = 10,
 	int pred_born = 65, int pred_hung = 5, int herb_cnt = 20, int herb_age = 12, int herb_start = 2,
 	int herb_end = 9, int herb_born = 100, int herb_hung = 5, int grass_rec = 100, int storm_chanse = 50, int curseason = 0) {
 	const string season[4] = { "Весна", "Лето", "Осень", "Зима" };
@@ -518,6 +529,7 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, 
 	int def_grass_rec = grass_rec;
 	int def_pred_born = pred_born;
 	int def_herb_born = herb_born;
+	--curseason;
 	for (int yr = 1; yr <= dur; ++yr) {
 		for (int mnth = 1; mnth <= 12; ++mnth) {
 			if ((mnth - 1) % 3 == 0) {
@@ -530,22 +542,18 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, 
 					grass_rec = def_grass_rec;
 					pred_born = def_pred_born+5;
 					herb_born = def_herb_born+5;
-					return;
 				case 1: // Лето
 					grass_rec = (def_grass_rec * 4) / 5;
 					pred_born = def_pred_born - 10;
 					herb_born = def_herb_born - 10;
-					return;
 				case 2: // Осень
 					grass_rec = (def_grass_rec * 9) / 10;
 					pred_born = def_pred_born;
 					herb_born = def_herb_born;
-					return;
 				case 3: // Зима
 					grass_rec = (def_grass_rec * 2) / 10;
 					pred_born = def_pred_born / 2;
 					herb_born = def_herb_born / 2;
-					return;
 				}
 			}
 			hunt(preds, herbs);
@@ -566,12 +574,20 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, 
 
 			logs << "Год: " << yr << ", Месяц: " << mnth << ", Время года: " << season[curseason] << '\n';
 			logs << show(preds, herbs, field);
+			if (checkTheEnd(preds, herbs)) {
+				logs << "Все популяции существ вымерли, конец симуляции";
+				logs.close();
+				system("pause");
+				system("clr");
+				printToConsole((yr-1) * 12 + mnth, size);
+				return;
+			}
 		}
 		plusage(preds);
 		plusage(herbs);
 		die(preds, pred_age, pred_hung);
 	}
-	logs << "Симуляция окончена";
+	logs << "Симуляция завершена";
 	logs.close();
 	system("pause");
 	system("clr");
