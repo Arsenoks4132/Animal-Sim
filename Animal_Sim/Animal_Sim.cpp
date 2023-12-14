@@ -6,7 +6,71 @@
 
 using namespace std;
 
-void printToConsole(int, int);
+#define DBLUE 1
+#define DGREEN 2
+#define DLBLUE 3
+#define DRED 4
+#define DPINK 5
+#define DYELLOW 6
+#define DEFAULT 7
+#define GRAY 8
+#define BLUE 9
+#define GREEN 10
+#define LBLUE 11
+#define RED 12
+#define PINK 13
+#define YELLOW 14
+#define WHITE 15
+
+void print(string text, int color = DEFAULT) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
+    cout << text;
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+}
+
+void println(string text, int color = DEFAULT) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
+    cout << text << endl;
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+}
+
+void printToConsole(int generations, int size) {
+    size += 2;
+    ifstream wo("logs.txt");
+    string buff;
+    system("cls");
+    string text = "";
+    for (int j = 0; j <= size + 1; j++) {
+        getline(wo, buff);
+        text += buff;
+        text.push_back('\n');
+    }
+    cout << text;
+    Sleep(3000);
+    for (int i = 0; i < generations; i++) {
+        system("cls");
+        string text = "";
+        for (int j = 0; j <= size + 1; j++) {
+            getline(wo, buff);
+            text += buff;
+            text.push_back('\n');
+        }
+        if (i == generations - 1) {
+            getline(wo, buff);
+            text += buff;
+            text.push_back('\n');
+            text.push_back('\n');
+            cout << text;
+            system("pause");
+            return;
+        }
+        cout << text;
+        Sleep(500);
+    }
+    system("cls");
+}
 
 int ichek(int min, int max, string x = "") {
     int res;
@@ -489,71 +553,7 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, 
     printToConsole(dur*12, size);
 }
 
-#define DBLUE 1
-#define DGREEN 2
-#define DLBLUE 3
-#define DRED 4
-#define DPINK 5
-#define DYELLOW 6
-#define DEFAULT 7
-#define GRAY 8
-#define BLUE 9
-#define GREEN 10
-#define LBLUE 11
-#define RED 12
-#define PINK 13
-#define YELLOW 14
-#define WHITE 15
 
-void print(string text, int color = DEFAULT) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, color);
-    cout << text;
-    SetConsoleTextAttribute(hConsole, DEFAULT);
-}
-
-void println(string text, int color = DEFAULT) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, color);
-    cout << text << endl;
-    SetConsoleTextAttribute(hConsole, DEFAULT);
-}
-
-void printToConsole(int generations, int size) {
-    size += 2;
-    ifstream wo("logs.txt");
-    string buff;
-    system("cls");
-    string text = "";
-    for (int j = 0; j <= size + 1; j++) {
-        getline(wo, buff);
-        text += buff;
-        text.push_back('\n');
-    }
-    cout << text;
-    Sleep(3000);
-    for (int i = 0; i < generations; i++) {
-        system("cls");
-        string text = "";
-        for (int j = 0; j <= size + 1; j++) {
-            getline(wo, buff);
-            text += buff;
-            text.push_back('\n');
-        }
-        if (i == generations - 1) {
-            getline(wo, buff);
-            text += buff;
-            text.push_back('\n');
-            text.push_back('\n');
-            cout << text;
-            system("pause");
-            return;
-        }
-        cout << text;
-        Sleep(500);
-    }
-    system("cls");
-}
 
 int main() {
     setlocale(LC_ALL, "Russian");
