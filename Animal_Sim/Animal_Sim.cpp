@@ -327,16 +327,19 @@ void born(vector<vector<entity>>& one, vector<vector<entity>>& two, vector<vecto
                         if (!two[i][j].alive && !one[i][j].alive) {
                             coord.push_back({ i,j });
                         }
-                        if (one[i][j].alive && minAge <= one[i][j].age && one[i][j].age <= maxAge) {
-                            para = true;
-                        }
-                        if (one[i][j].alive || two[i][j].alive) {
-                            ++cnt;
-                        }
+                        else {
+                            if (one[i][j].alive && minAge <= one[i][j].age && one[i][j].age <= maxAge && !(y == i && x == j)) {
+                                para = true;
+                                ++cnt;
+                            }
+                            else if (one[i][j].alive || two[i][j].alive) {
+                                ++cnt;
+                            }
+						}
                     }
                 }
                 int rand = gen() % 100;
-                if (coord.size() != 0 && para && cnt == 1 && rand <= chance) {
+                if (coord.size() != 0 && para && cnt == 2 && rand <= chance) {
                     int ch = gen() % coord.size();
                     one[coord[ch][0]][coord[ch][1]].alive = true;
                     one[coord[ch][0]][coord[ch][1]].hung = mh;
@@ -360,9 +363,9 @@ void plusage(vector<vector<entity>>& one) {
     }
 }
 
-void animals(int size = 6, int dur = 1, int pred_cnt = 2, int pred_age = 15, int pred_start = 3, int pred_end = 10,
-    int pred_born = 65, int pred_hung = 5, int herb_cnt = 2, int herb_age = 15, int herb_start = 2,
-    int herb_end = 8, int herb_born = 85, int herb_hung = 5, int grass_rec = 5, int storm_chanse = 1, int season = 1) {
+void animals(int size = 70, int dur = 3, int pred_cnt = 0, int pred_age = 15, int pred_start = 1, int pred_end = 10,
+    int pred_born = 65, int pred_hung = 5, int herb_cnt = 100, int herb_age = 15, int herb_start = 0,
+    int herb_end = 8, int herb_born = 100, int herb_hung = 5, int grass_rec = 5, int storm_chanse = 1, int season = 1) {
     random_device rd;
     mt19937 gen(rd());
 
@@ -381,9 +384,6 @@ void animals(int size = 6, int dur = 1, int pred_cnt = 2, int pred_age = 15, int
 
     for (int yr = 1; yr <= dur; ++yr) {
         for (int mnth = 1; mnth <= 12; ++mnth) {
-            born(preds, herbs, field, true, pred_hung / 2, pred_start, pred_end, pred_born);
-            born(herbs, preds, field, false, herb_hung / 2, herb_start, herb_end, herb_born);
-
             hunt(preds, herbs);
             eat(herbs, field);
 
@@ -392,6 +392,9 @@ void animals(int size = 6, int dur = 1, int pred_cnt = 2, int pred_age = 15, int
 
             preds = go(preds, herbs, field, true);
             herbs = go(herbs, preds, field, false);
+
+            born(preds, herbs, field, true, pred_hung / 2, pred_start, pred_end, pred_born);
+            born(herbs, preds, field, false, herb_hung / 2, herb_start, herb_end, herb_born);
 
             logs << "Месяц: " << mnth << ", Год: " << yr << '\n';
             logs << show(preds, herbs, field);
