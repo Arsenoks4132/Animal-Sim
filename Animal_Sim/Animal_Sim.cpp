@@ -78,7 +78,6 @@ vector<vector<entity>> generate(vector<vector<entity>> one, vector<vector<entity
     return one;
 }
 
-
 vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> preds, int rec) {
     random_device rd;
     mt19937 gen(rd());
@@ -103,7 +102,7 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
         x = gen() % size;
         y = gen() % size;
         if (!(preds[y][x].alive)) {
-            field[y][x] = '^';
+            field[y][x] = '*';
             --super;
         }
     }
@@ -118,7 +117,6 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
     }
     return field;
 }
-
 
 string show(vector<vector<entity>> preds, vector<vector<entity>> herbs, vector<vector<char>> vect) {
     int msize = vect.size();
@@ -271,7 +269,7 @@ void eat(vector<vector<entity>>& herbs, vector<vector<char>>& grass) {
                 }
                 for (int i = y_st; i <= y_ed; ++i) {
                     for (int j = x_st; j <= x_ed; ++j) {
-                        if (grass[i][j] == '^') {
+                        if (grass[i][j] == '*') {
                             super.push_back({ i,j });
                         }
                         if (grass[i][j] == '.') {
