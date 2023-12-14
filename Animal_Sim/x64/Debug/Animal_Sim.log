@@ -9,8 +9,9 @@ C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(208,28): warnin
 C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(219,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
 C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(259,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
 C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(313,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(423,34): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(423,24): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(444,30): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(444,20): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(382,18): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(460,34): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(460,24): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(483,30): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\Animal_Sim.cpp(483,20): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
   Animal_Sim.vcxproj -> C:\Users\Danov\source\repos\Animal-Sim\Animal_Sim\x64\Debug\Animal_Sim.exe
