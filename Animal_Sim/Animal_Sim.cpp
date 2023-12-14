@@ -81,9 +81,14 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
     random_device rd;
     mt19937 gen(rd());
     int size = field.size();
-    int attempts = rec*3;
+
     int super = rec / 100 * (gen() % 10);
     int hard = rec / 100 * (gen() % 10);
+
+    int attempts = rec * 2;
+    int attempts_s = super * 2;
+    int attempts_h = hard * 2;
+
     int x;
     int y;
     while (rec > 0 && attempts != 0) {
@@ -97,21 +102,27 @@ vector<vector<char>> grass(vector<vector<char>> field, vector<vector<entity>> pr
             --attempts;
         }
     }
-    while (super > 0) {
+    while (super > 0 && attempts_s != 0) {
         x = gen() % size;
         y = gen() % size;
         if (!(preds[y][x].alive)) {
             field[y][x] = '*';
             --super;
         }
+        else {
+            --attempts_s;
+        }
     }
 
-    while (hard > 0) {
+    while (hard > 0 && attempts_h != 0) {
         x = gen() % size;
         y = gen() % size;
         if (field[y][x] == ' ' && !(preds[y][x].alive)) {
             field[y][x] = '#';
             --hard;
+        }
+        else {
+            --attempts_h;
         }
     }
     return field;
@@ -362,9 +373,9 @@ void plusage(vector<vector<entity>>& one) {
     }
 }
 
-void animals(int size = 20, int dur = 40, int pred_cnt = 10, int pred_age = 18, int pred_start = 3, int pred_end = 10,
-    int pred_born = 65, int pred_hung = 5, int herb_cnt = 40, int herb_age = 12, int herb_start = 2,
-    int herb_end = 9, int herb_born = 100, int herb_hung = 5, int grass_rec = 5, int storm_chanse = 1, int curseason = 0) {
+void animals(int size = 20, int dur = 40, int pred_cnt = 20, int pred_age = 18, int pred_start = 3, int pred_end = 10,
+    int pred_born = 65, int pred_hung = 5, int herb_cnt = 20, int herb_age = 12, int herb_start = 2,
+    int herb_end = 9, int herb_born = 100, int herb_hung = 5, int grass_rec = 100, int storm_chanse = 1, int curseason = 0) {
     const string season[4] = {"Весна", "Лето", "Осень", "Зима"};
     cout << "Установленные параметры:\n";
     cout << "Размер квадратного поля: " << size * size << endl;
@@ -386,8 +397,7 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 10, int pred_age = 18, 
     cout << "Возраст начала и конца репродукции травоядных: с " << herb_start << " до " << herb_end << endl;
     cout << "Шанс рождения травоядного: " << herb_born << "%" << endl;
     cout << "Необходимое насыщение для трявоядного: " << herb_hung << endl;
-    system("pause");
-    system("clr");
+    
     random_device rd;
     mt19937 gen(rd());
 
@@ -409,7 +419,7 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 10, int pred_age = 18, 
             hunt(preds, herbs);
             eat(herbs, field);
 
-            die(preds, pred_age, pred_hung);
+            
             die(herbs, herb_age, herb_hung);
 
             preds = go(preds, herbs, field, true);
@@ -417,6 +427,8 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 10, int pred_age = 18, 
 
             born(preds, herbs, field, true, pred_hung / 2, pred_start, pred_end, pred_born);
             born(herbs, preds, field, false, herb_hung / 2, herb_start, herb_end, herb_born);
+
+            field = grass(field, preds, grass_rec);
 
             logs << "Год: " << yr << ", Месяц: " << mnth << ", Время года: " << season[curseason] << '\n';
             logs << show(preds, herbs, field);
@@ -429,11 +441,12 @@ void animals(int size = 20, int dur = 40, int pred_cnt = 10, int pred_age = 18, 
         }
         plusage(preds);
         plusage(herbs);
-        field = grass(field, preds, grass_rec);
+        die(preds, pred_age, pred_hung);
     }
     logs << "Симуляция окончена";
     logs.close();
-
+    system("pause");
+    system("clr");
     printToConsole(dur*12, size);
 }
 
